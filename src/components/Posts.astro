@@ -1,0 +1,218 @@
+---
+import { SOCIAL_LINKS } from "../consts";
+import { getCollection } from "astro:content";
+import { getUniqueTags, getPostsByTag } from "../utils";
+import FormattedDate from "../components/FormattedDate.astro";
+import { generateURL, decodeTag } from "../utils";
+
+const posts = (await getCollection("blog", post => !post.data.hide)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+const tags = getUniqueTags(posts);
+---
+
+<div>
+    <div class="topbar">
+        <ul class="inline-container">
+            <li>
+                <a href="javascript:void(0)" class="filter-btn" data-tag="">
+                    {"cyvvp".toUpperCase()}
+                </a>
+            </li>
+            {
+                tags.map(tag => (
+                  <li>
+                    <a href="javascript:void(0)" class="filter-btn" data-tag={tag}>
+                    {decodeTag(tag).toUpperCase()}
+                    </a>
+                  </li>
+                ))
+            }
+
+            {
+                Object.entries(SOCIAL_LINKS).map(([key, value]) => {
+                  if (!value) return null;
+                  return (
+                    <li>
+                      <a
+                        href={value}
+                        rel="noopener noreferrer"
+                        target="_blank"
+                        aria-label={`Link to ${key}`}
+                        title={`Link to ${key}`}
+                      >
+                        {key.toUpperCase()}
+                      </a>
+                    </li>
+                  );
+                })
+              }
+            <li>
+                <a href={generateURL(`/about/`)}>
+                  ABOUT
+                </a>
+            </li>
+            <li id="theme-btn" aria-label="auto" aria-live="polite" role="button">
+                <a id="theme-text" class="theme-text">
+                    LIGHT
+                </a>
+            </li>
+        </ul>    
+    </div>
+
+    <div class="scrollposts">
+        <!-- Post container -->
+        <ul class="blog-posts">
+            {
+              posts.map(post => (
+                <li class="post" data-tags={post.data.tags.join(" ")}>
+                  <span>
+                    <i>
+                      <FormattedDate date={post.data.pubDate} />
+                    </i>
+                  </span>
+                  <a
+                    href={generateURL(`/blog/${post.id}/`)}
+                    transition:name={`post-title-${post.id}`}
+                  >
+                    {post.data.title.toUpperCase()}
+                  </a>
+                </li>
+              ))
+            }
+        </ul>
+    </div>
+  </div>
+
+<script>
+  // Function to filter posts based on selected tag
+  function filterContent(tag) {
+    const posts = document.querySelectorAll(".post");
+
+    posts.forEach(post => {
+      const postTags = post.dataset.tags.split(" "); // Get tags from data-tags
+      if (!tag || postTags.includes(tag)) {
+        post.style.visibility = "visible"; // Show the post
+      } else {
+        post.style.visibility = "hidden";  // Hide the post
+      }
+    });
+  }
+
+  // Wait for the DOM content to be fully loaded
+  document.addEventListener('DOMContentLoaded', function() {
+    // Handle theme switching
+    const themeBtn = document.getElementById('theme-btn');
+    const themeText = document.getElementById('theme-text');
+
+    // Check current theme and set initial text
+    if (document.body.classList.contains('dark-mode')) {
+      themeText.textContent = 'DARK';
+    } else {
+      themeText.textContent = 'LIGHT';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      // Toggle the theme class
+      document.body.classList.toggle('dark-mode');
+
+      // Update the text depending on the new theme
+      if (document.body.classList.contains('dark-mode')) {
+        themeText.textContent = 'DARK';
+      } else {
+        themeText.textContent = 'LIGHT';
+      }
+    });
+
+    // Add click event listeners to filter buttons
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    filterButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const tag = this.getAttribute('data-tag');
+        filterContent(tag); // Call the filterContent function with the tag
+      });
+    });
+  });
+</script>
+
+<style>
+
+  ul {
+      margin: 0;
+      padding: 0;
+      list-style-type: none;
+  }
+
+  .inline-container > * {
+      margin: 0;
+  }
+
+  .inline-container {
+    width:100%;
+    max-width: 600px;
+    display: flex;
+    flex-wrap: wrap; /* Allows wrapping */
+    justify-content: center; /* Center items */
+    align-items: center;
+    gap: 10px; /* Keeps consistent spacing */
+    padding: 10px;
+    text-align: center;
+}
+
+.inline-container li {
+    display: inline-block; /* Prevents stretching */
+    white-space: nowrap; /* Prevents text wrapping inside */
+}
+
+
+
+.topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    max-width: 100vw;
+    margin-bottom: 20px;
+    border-bottom: dashed;
+    border-bottom-width: 1px;
+    padding: 10px 0;
+    display:flex;
+    justify-content: center;
+}
+
+  .scrollposts{
+    max-width: 720px;
+    width: 100%;
+    padding-top: 50px;
+    overflow-y: scroll; /* Allow vertical scrolling */
+  }
+
+  .blog-posts {
+  }
+
+  .blog-posts > *{
+      padding-left: 20px;
+      padding-right: 20px;
+      padding-top: 10px;
+      padding-bottom: 15px;
+  }
+
+  .post:hover {
+      font-weight: bold;
+  }
+
+  a {
+      color: var(--link-color);
+      cursor: pointer;
+      text-decoration: none;
+  }
+
+  a {
+      text-underline-offset: 4px;
+  }
+
+  a:hover {
+      text-decoration: underline;
+      text-decoration-style: dashed;
+  }
+</style>

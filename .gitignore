@@ -1,35 +1,33 @@
-# Node modules
-/node_modules/
+# Node.js dependencies
+node_modules/
 
 # Build output
 /dist/
-/public/
 
-# TypeScript output
-/**/*.tsbuildinfo
+# Astro build cache
+.astro/
 
-# VSCode settings
-.vscode/
-
-# IDEs and editor-specific files
-.idea/
-*.swp
-*.swo
-
-# Log files
+# Logs
 *.log
+
+# OS-specific files
+.DS_Store
+Thumbs.db
 
 # Environment files
 .env
 .env.local
 .env.*.local
 
-# Dependency directories for Yarn and npm
-/yarn.lock
-/package-lock.json
+# IDE and editor files
+.vscode/
+.idea/
 
-# Astro specific build files
-/.astro/
+# Dependency directories
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Temporary files for local development
-*.local
+# Package manager lock files (optional)
+package-lock.json
+yarn.lock

@@ -1,0 +1,14 @@
+---
+import { BLOG_CONFIG } from "../consts";
+interface Props {
+  date: Date;
+}
+
+const { date } = Astro.props;
+---
+
+<time datetime={date.toISOString()}>
+  {
+      `${date.getMonth() + 1}/${date.getFullYear()}`
+  }
+</time>
