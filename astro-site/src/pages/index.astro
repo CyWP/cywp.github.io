@@ -1,0 +1,14 @@
+---
+import ThreeScene from '../components/Laplacian.jsx';
+import Layout from "../layouts/Layout.astro";
+import PostList from "../components/PostList.jsx";
+
+const allPosts = await Astro.glob("../content/**/*.md");
+const selectedCategory = null; // Default: show all categories
+---
+
+<Layout>
+  <h1>Welcome to My Website</h1>
+  <ThreeScene />  <!-- 3D Animation Section -->
+  <PostList posts={allPosts} selectedCategory={selectedCategory} />
+</Layout>

@@ -1,0 +1,18 @@
+---
+import React from "react";
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('content');
+const { slug } = Astro.params;
+const post = allPosts.find((p) => p.slug === slug);
+
+if (!post) {
+  throw new Error(`Post not found: ${slug}`);
+}
+---
+
+<article>
+  <h1>{post.data.title}</h1>
+  <p>{post.data.description}</p>
+  <div>{post.body}</div>
+</article>
