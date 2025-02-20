@@ -1,14 +1,16 @@
 ---
 import { BLOG_CONFIG } from "../consts";
 interface Props {
-  date: Date;
+  date?: Date; // Make date optional
 }
 
 const { date } = Astro.props;
+
+const formattedDate = date
+  ? `${date.getMonth() + 1}/${date.getFullYear()}`
+  : ""; // Default value when date is not provided
 ---
 
-<time datetime={date.toISOString()}>
-  {
-      `${date.getMonth() + 1}/${date.getFullYear()}`
-  }
+<time datetime={date?.toISOString()}>
+  {formattedDate}
 </time>
