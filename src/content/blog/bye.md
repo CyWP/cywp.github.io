@@ -6,6 +6,7 @@ updatedDate: "Dec 18 2024"
 hide: false
 tags:
   - bye
+preview_image: "/img/garfield.png"
 ---
 # Heading 1
 

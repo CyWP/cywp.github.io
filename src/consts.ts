@@ -1,12 +1,11 @@
 // Place any global data in this file.
 // You can import this data from anywhere in your site by using the `import` keyword.
 
-export const SITE_TITLE = "cyvvp";
-export const SITE_DESCRIPTION = "cyvvp";
+export const SITE_TITLE = "Thomas Peschlow";
+export const SITE_DESCRIPTION = "Personal website";
 
 export const SOCIAL_LINKS = {
   Github: "https://github.com/CyWP",
-  Instagram: "https://www.instagram.com/cyvvp/",
 };
 
 export const SEO_CONFIG = {

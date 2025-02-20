@@ -10,6 +10,7 @@ export default defineConfig({
   markdown: {
     shikiConfig: {
       wrap: true,
+      theme: "min-light", // <-- change this to any Shiki theme you like
     },
   },
 });

@@ -28,14 +28,6 @@ const structuredData = {
   <article>
     <header>
       <div class="topbar">
-        <FormattedDate date={pubDate} />
-        {
-          updatedDate && (
-            <div class="last-updated-on">
-              LAST UPDATE ON <FormattedDate date={updatedDate} />
-            </div>
-          )
-        }
         <a href="/">HOME</a>
         <p id="theme-btn" aria-label="auto" aria-live="polite" role="button">
           <a id="theme-text" class="theme-text">
@@ -44,12 +36,12 @@ const structuredData = {
         </p>
       </li>
       </div>
+    </header>
+
+    <div class="content">
       <h1>
         <span transition:name={`post-title-${id}`}>{title}</span>
       </h1>
-    </header>
-    
-    <div class="content">
       <div class="prose">
         <slot />
       </div>
@@ -87,7 +79,7 @@ const structuredData = {
   }
 
   .content {
-    padding-top: 90px; /* Prevents content from being hidden behind fixed header */
+    padding-top: 210px; /* Prevents content from being hidden behind fixed header */
     font-size: 1.2em;
   }
 

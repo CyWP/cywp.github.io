@@ -5,6 +5,12 @@ import { RenderPass } from 'https://cdn.jsdelivr.net/npm/three@0.121.1/examples/
 import { ShaderPass } from 'https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/postprocessing/ShaderPass.js';
 
 // Pixelation shader
+const defaultTexture = new THREE.TextureLoader().load('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8Xw8AAgMBAAIA4vQdAAAAAElFTkSuQmCC');
+window.themeColors = {
+  light: new THREE.Color("#ffffff"), // bright/white theme
+  dark: new THREE.Color("#222222")   // dark theme
+};
+
 const pixelationShader = {
   uniforms: {
     tDiffuse: { value: null },
@@ -96,8 +102,6 @@ const boxBlurShader = {
   `
 };
 
-
-
 function initThreeJS() {
   const container = document.getElementById("threejs-container");
   if (!container) {
@@ -130,8 +134,44 @@ function initThreeJS() {
             const center = box.getCenter(new THREE.Vector3());
             mesh.position.sub(center); // Subtract center from the position to move the model to (0, 0, 0)
             mesh.position.add(new THREE.Vector3(getRandomValue(-maxdisp, maxdisp), getRandomValue(-maxdisp, maxdisp), getRandomValue(-maxdisp, maxdisp)))
-  
             // Push mesh into baseMeshes array and add to the scene
+            //Add shader
+            mesh.traverse((child) => {
+              if (child.isMesh) {
+                const oldMat = child.material;
+                const texture = oldMat.map || null; // use original texture if it exists
+                child.material = new THREE.ShaderMaterial({
+                  uniforms: {
+                    uTexture: { value: texture },
+                    uThemeColor: { value: window.themeColors[themeValue] },
+                  },
+                  vertexShader: `
+                    varying vec3 vNormal;
+                    varying vec2 vUv;
+                    void main() {
+                      vNormal = normalize(normalMatrix * normal);
+                      vUv = uv;
+                      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                    }
+                  `,
+                  fragmentShader: `
+                    uniform sampler2D uTexture;
+                    uniform vec3 uThemeColor;
+                    varying vec3 vNormal;
+                    varying vec2 vUv;
+
+                    void main() {
+                      // Always safe to sample, no null checks
+                      vec3 texColor = texture2D(uTexture, vUv).rgb;
+                      float facing = clamp(dot(vNormal, vec3(0.0, 0.0, 1.5)), 0.0, 1.0);
+                      vec3 finalColor = mix(texColor, uThemeColor, facing);
+                      gl_FragColor = vec4(finalColor, 1.0);
+                    }
+                  `
+                });
+                window.shaderMaterials.push(child.material)
+              }
+            });
             baseMeshes.push(mesh);
             scene.add(mesh);
   
@@ -162,13 +202,14 @@ function initThreeJS() {
     }
   }
 
+
   function getRandomValue(min, max) {
     return Math.random() * (max - min) + min;
   }
 
   // Scene and camera
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(300, container.clientWidth / container.clientHeight, 0.1, 1000);
+  const camera = new THREE.PerspectiveCamera(300, container.clientWidth / container.clientHeight, 0.1, 10000);
   camera.position.z = 2;
   const ambientLight = new THREE.AmbientLight(0xffffff, 2); // White light, intensity 1
   scene.add(ambientLight);
@@ -201,6 +242,10 @@ function initThreeJS() {
   const maxtrans = 0.001;
   loadModels();
 
+  for (let i = 0; i < baseMeshes.length; i++) {
+      const mesh = baseMeshes[i];
+      mesh.material = normalShaderMaterial}
+
   // Set up renderer with transparent background
   const renderer = new THREE.WebGLRenderer({ alpha: true });
   renderer.setSize(container.clientWidth, container.clientHeight);
@@ -212,26 +257,31 @@ function initThreeJS() {
   const renderPass = new RenderPass(scene, camera);
   composer.addPass(renderPass);
 
-  const pixelShaderPass = new ShaderPass(boxBlurShader);
+  const blurShaderPass = new ShaderPass(boxBlurShader);
+  composer.addPass(blurShaderPass);
+  blurShaderPass.renderToScreen = true;
+
+  const pixelShaderPass = new ShaderPass(pixelationShader);
   composer.addPass(pixelShaderPass);
   pixelShaderPass.renderToScreen = true;
-
-  // Set up morphing mesh
-  const mesh = new THREE.BufferGeometry();
-
+  
   // Values for transforming baseMeshes
   console.log(rotations);
 
+  let running = true;   // pause / resume rendering
+  let hasFocus = true;  // also track window focus
+
   function animate() {
     requestAnimationFrame(animate);
+
+    if (!running || !hasFocus) return;
 
     // Apply rotation to each mesh
     for (let i = 0; i < baseMeshes.length; i++) {
       const mesh = baseMeshes[i];
       const rot = rotations[i];
       const tra = translations[i];
-  
-      // Apply the rotations over time
+
       if (rot) {
         mesh.rotation.x += rot.x;
         mesh.rotation.y += rot.y;
@@ -248,7 +298,6 @@ function initThreeJS() {
       }
     }
 
-    // Render the scene with post-processing (including pixelation)
     composer.render();
   }
 
@@ -259,11 +308,19 @@ function initThreeJS() {
     renderer.setSize(container.clientWidth, container.clientHeight);
     camera.aspect = container.clientWidth / container.clientHeight;
     camera.updateProjectionMatrix();
-  
-    // Update resolution for pixelation effect
-    pixelShaderPass.uniforms.resolution.value.set(window.innerWidth, window.innerHeight);
+
+  });
+  // Pause when leaving page or switching tab
+  document.addEventListener("visibilitychange", () => {
+    running = !document.hidden;
+  });
+
+  // Pause when window loses focus (optional, but smooth)
+  window.addEventListener("blur", () => {
+    hasFocus = false;
+  });
+  window.addEventListener("focus", () => {
+    hasFocus = true;
   });
 }
-
-// ✅ Ensure script runs only after the DOM is loaded
-document.addEventListener("DOMContentLoaded", initThreeJS);
+document.addEventListener("astro:page-load", initThreeJS);

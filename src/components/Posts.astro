@@ -2,7 +2,6 @@
 import { SOCIAL_LINKS } from "../consts";
 import { getCollection } from "astro:content";
 import { getUniqueTags, getPostsByTag } from "../utils";
-import FormattedDate from "../components/FormattedDate.astro";
 import { generateURL, decodeTag } from "../utils";
 
 const posts = (await getCollection("blog", post => !post.data.hide)).sort(
@@ -16,7 +15,7 @@ const tags = getUniqueTags(posts);
         <ul class="inline-container">
             <li>
                 <a href="javascript:void(0)" class="filter-btn" data-tag="">
-                    {"cyvvp".toUpperCase()}
+                    {"all".toUpperCase()}
                 </a>
             </li>
             {
@@ -63,26 +62,93 @@ const tags = getUniqueTags(posts);
     <div class="scrollposts">
         <!-- Post container -->
         <ul class="blog-posts">
-            {
-              posts.map(post => (
-                <li class="post" data-tags={post.data.tags.join(" ")}>
-                  <span>
-                    <i>
-                      <FormattedDate date={post.data.pubDate} />
-                    </i>
-                  </span>
-                  <a
-                    href={generateURL(`/blog/${post.id}/`)}
-                    transition:name={`post-title-${post.id}`}
-                  >
-                    {post.data.title.toUpperCase()}
-                  </a>
-                </li>
-              ))
-            }
+          {posts.map(post => (
+            <li class="post" data-tags={post.data.tags.join(" ")}>
+              <a
+                href={generateURL(`/blog/${post.id}/`)}
+                data-img={post.data.preview_image}
+                data-desc={post.data.description}
+              >
+                {post.data.title.toUpperCase()}
+              </a>
+            </li>
+          ))}
         </ul>
     </div>
   </div>
+
+<div id="hover-preview-container">
+  <img id="hover-preview" class="preview-img" />
+  <div id="hover-preview-text" class="preview-text"></div>
+</div>
+
+<!-- <img id="hover-preview" class="preview-img" /> -->
+
+<script is:inline>
+function attachHoverPreview() {
+  const container = document.getElementById('hover-preview-container');
+  const img = document.getElementById('hover-preview');
+  const text = document.getElementById('hover-preview-text');
+
+  if ('ontouchstart' in window || navigator.maxTouchPoints > 0) return;
+
+  document.querySelectorAll('.blog-posts a').forEach(link => {
+    // Clear old listeners if re-attaching
+    link.onmousemove = null;
+    link.onmouseleave = null;
+
+    link.addEventListener('mousemove', e => {
+      const src = link.dataset.img;
+      const desc = link.dataset.desc;
+      if (!src) return;
+
+      img.src = src;
+      text.textContent = desc || '';
+
+      container.style.left = (e.clientX) + 'px';
+      container.style.top = (e.clientY) + 'px';
+      container.style.opacity = 1;
+    });
+
+    link.addEventListener('mouseleave', () => {
+      container.style.opacity = 0;
+    });
+  });
+}
+
+// Initial attachment
+attachHoverPreview();
+
+// Reattach after Astro swaps the page content
+document.addEventListener('astro:after-swap', attachHoverPreview);
+</script>
+
+<style>
+  #hover-preview-container {
+    max-width: 20vw;
+    position: fixed;
+    pointer-events: none;
+    opacity: 0;
+    z-index: 9997;
+    transition: opacity 1s ease;
+    transform: translate(20px, 20px);
+    border: dashed 1px;
+  }
+  .preview-img {
+    pointer-events: none;
+    transition: opacity 1s;
+    opacity: 1;
+    z-index: 9998;
+  }
+  .preview-text {
+    font-size: 1rem;
+    max-width: 100%;
+    margin: 5px;
+    z-index: 9999;
+    white-space: normal;
+    overflow-wrap: break-word;
+  }
+</style>
 
 <script>
   // Function to filter posts based on selected tag
@@ -92,46 +158,55 @@ const tags = getUniqueTags(posts);
     posts.forEach(post => {
       const postTags = post.dataset.tags.split(" "); // Get tags from data-tags
       if (!tag || postTags.includes(tag)) {
-        post.style.visibility = "visible"; // Show the post
+        post.style.display = "block"; // Show the post
       } else {
-        post.style.visibility = "hidden";  // Hide the post
+        post.style.display = "none";  // Hide the post
       }
     });
   }
 
-  // Wait for the DOM content to be fully loaded
-  document.addEventListener('DOMContentLoaded', function() {
-    // Handle theme switching
+  // Function to attach filter button click listeners
+  function attachFilterButtons() {
+    const filterButtons = document.querySelectorAll('.filter-btn');
+
+    filterButtons.forEach(button => {
+      // Remove old listener to avoid duplicates
+      button.onclick = null;
+
+      button.addEventListener('click', function() {
+        const tag = this.getAttribute('data-tag');
+        filterContent(tag); // Call the filterContent function
+      });
+    });
+  }
+
+  // Function to attach theme toggle
+  function attachThemeToggle() {
     const themeBtn = document.getElementById('theme-btn');
     const themeText = document.getElementById('theme-text');
 
-    // Check current theme and set initial text
-    if (document.body.classList.contains('dark-mode')) {
-      themeText.textContent = 'DARK';
-    } else {
-      themeText.textContent = 'LIGHT';
-    }
+    if (!themeBtn || !themeText) return;
+
+    // Set initial theme text
+    themeText.textContent = document.body.classList.contains('dark-mode') ? 'DARK' : 'LIGHT';
+
+    // Remove old listener to avoid duplicates
+    themeBtn.onclick = null;
 
     themeBtn.addEventListener('click', () => {
-      // Toggle the theme class
       document.body.classList.toggle('dark-mode');
-
-      // Update the text depending on the new theme
-      if (document.body.classList.contains('dark-mode')) {
-        themeText.textContent = 'DARK';
-      } else {
-        themeText.textContent = 'LIGHT';
-      }
+      themeText.textContent = document.body.classList.contains('dark-mode') ? 'DARK' : 'LIGHT';
     });
+  }
 
-    // Add click event listeners to filter buttons
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    filterButtons.forEach(button => {
-      button.addEventListener('click', function() {
-        const tag = this.getAttribute('data-tag');
-        filterContent(tag); // Call the filterContent function with the tag
-      });
-    });
+  // Initial attachment
+  attachFilterButtons();
+  attachThemeToggle();
+
+  // Reattach after Astro swaps content
+  document.addEventListener('astro:after-swap', () => {
+    attachFilterButtons();
+    attachThemeToggle();
   });
 </script>
 
@@ -164,8 +239,6 @@ const tags = getUniqueTags(posts);
     white-space: nowrap; /* Prevents text wrapping inside */
 }
 
-
-
 .topbar {
     position: fixed;
     top: 0;
@@ -183,7 +256,7 @@ const tags = getUniqueTags(posts);
   .scrollposts{
     max-width: 720px;
     width: 100%;
-    padding-top: 50px;
+    padding-top: 180px;
     overflow-y: scroll; /* Allow vertical scrolling */
   }
 

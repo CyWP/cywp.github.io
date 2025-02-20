@@ -1,5 +1,5 @@
 const primaryColorScheme = ""; // "light" | "dark"
-
+window.shaderMaterials = [];
 // Get theme data from local storage
 const currentTheme = localStorage.getItem("theme");
 
@@ -23,6 +23,13 @@ function setPreference() {
   reflectPreference();
 }
 
+function updateShadersTheme() {
+  const color = themeValue === "dark" ? 0x111111 : 0xffffff;
+  window.shaderMaterials.forEach(mat => {
+    mat.uniforms.uThemeColor.value.set(color); // <-- use .set(), do NOT overwrite .value
+    mat.uniforms.uThemeColor.needsUpdate = true;
+  });
+}
 function reflectPreference() {
   document.firstElementChild.setAttribute("data-theme", themeValue);
 
@@ -44,6 +51,7 @@ function reflectPreference() {
       .querySelector("meta[name='theme-color']")
       ?.setAttribute("content", bgColor);
   }
+  updateShadersTheme();
 }
 
 // set early so no page flashes / CSS is made aware

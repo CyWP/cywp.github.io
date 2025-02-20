@@ -1,81 +1,72 @@
- @font-face {
+@font-face {
   font-family: 'D-DIN Regular';
   font-style: normal;
   font-weight: normal;
   src: local('D-DIN Regular'), url('D-DIN.woff') format('woff');
-  }
-  
+}
 
-  @font-face {
+@font-face {
   font-family: 'D-DIN DIN-Italic';
   font-style: normal;
   font-weight: normal;
   src: local('D-DIN DIN-Italic'), url('D-DIN-Italic.woff') format('woff');
-  }
-  
+}
 
-  @font-face {
+@font-face {
   font-family: 'D-DIN DIN-Bold';
   font-style: normal;
   font-weight: normal;
   src: local('D-DIN DIN-Bold'), url('D-DIN-Bold.woff') format('woff');
-  }
-  
+}
 
-  @font-face {
+@font-face {
   font-family: 'D-DIN Condensed Regular';
   font-style: normal;
   font-weight: normal;
   src: local('D-DIN Condensed Regular'), url('D-DINCondensed.woff') format('woff');
-  }
-  
+}
 
-  @font-face {
+@font-face {
   font-family: 'D-DIN Exp Regular';
   font-style: normal;
   font-weight: normal;
   src: local('D-DIN Exp Regular'), url('D-DINExp.woff') format('woff');
-  }
-  
+}
 
-  @font-face {
+@font-face {
   font-family: 'D-DIN Exp DINExp-Italic';
   font-style: normal;
   font-weight: normal;
   src: local('D-DIN Exp DINExp-Italic'), url('D-DINExp-Italic.woff') format('woff');
-  }
-  
+}
 
-  @font-face {
+@font-face {
   font-family: 'D-DIN Condensed DINCondensed-Bold';
   font-style: normal;
   font-weight: normal;
   src: local('D-DIN Condensed DINCondensed-Bold'), url('D-DINCondensed-Bold.woff') format('woff');
-  }
-  
+}
 
-  @font-face {
+@font-face {
   font-family: 'D-DIN Exp DINExp-Bold';
   font-style: normal;
   font-weight: normal;
   src: local('D-DIN Exp DINExp-Bold'), url('D-DINExp-Bold.woff') format('woff');
-  }
+}
 
+/* ---------- THEME VARIABLES ---------- */
 :root {
   --width: 100vw;
   --min-height: 100vh;
   --font-main: 'D-DIN Exp Regular', sans-serif;
   --font-secondary: 'D-DIN Exp Regular', sans-serif;
-  --font-scale: 0.8em;
+  --font-scale: 1em;
   --background-color: #fff;
+  --code-background: rgba(0, 0, 0, 0.2)
   --heading-color: #333;
   --text-color: #333;
   --link-color: #333;
   --visited-color: #333;
-  --code-background-color: #eee;
-  --code-color: #eee;
-  --blockquote-color: #fff;
-  --code-border-color: #666;
 }
 
 :root[data-theme="dark"] {
@@ -84,12 +75,10 @@
   --text-color: #fff;
   --link-color: #fff;
   --visited-color: #fff;
-  --code-background-color: #fff;
-  --code-color: #ccc;
-  --blockquote-color: #ccc;
-  --code-border-color: #ccc;
+  --code-background: rgba(255, 255, 255, 0.05)
 }
 
+/* ---------- GLOBAL STYLES ---------- */
 * {
   margin: 0;
   padding: 0;
@@ -117,12 +106,11 @@ body {
   position: relative;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+#hover-preview-container {
+  background-color: var(--background-color);
+}
+
+h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-main);
   color: var(--heading-color);
 }
@@ -133,14 +121,15 @@ a {
   text-decoration: none;
 }
 
+a:hover {
+  text-decoration: underline;
+  text-decoration-style: dashed;
+}
+
 .prose a {
   text-decoration: underline;
   text-decoration-style: dashed;
   text-underline-offset: 4px;
-}
-
-a:hover {
-  text-decoration: underline;
 }
 
 nav a {
@@ -154,8 +143,7 @@ nav a.active {
   text-underline-offset: 4px;
 }
 
-strong,
-b {
+strong, b {
   color: var(--heading-color);
 }
 
@@ -211,26 +199,44 @@ footer {
   width: auto !important;
 }
 
+/* ---------- INLINE CODE ---------- */
 :not(.astro-code) > code {
   font-family: monospace;
-  padding: 2px;
-  background-color: var(--code-background-color);
-  color: var(--code-color);
-  border-radius: 3px;
+  background: transparent;   /* No background */
+  color: inherit;            /* Default text color */
+  padding: 0 2px;
+  border-radius: 0;
 }
 
-.highlight,
-.code {
-  padding: 1px 15px;
-  background-color: var(--code-background-color);
-  color: var(--code-color);
+/* ---------- CODE BLOCKS (SHIKI) ---------- */
+pre.astro-code,
+.astro-code span.token {
+  background: var(--code-background) !important;
+}
+pre.astro-code {
+  font-family: monospace;
+  background: var(--code-background);
+  border: dashed 1px;
+  border-color: var(--text-color);
   border-radius: 3px;
-  margin-block-start: 1em;
-  margin-block-end: 1em;
+  padding: 5px;
   overflow-x: auto;
+  line-height: 1.5;
 }
 
-/* blog post list */
+/* Let Shiki assign colors to tokens, do not override */
+.astro-code span.token {
+  /* Only inherit background, keep Shiki text color */
+  background: none !important;
+}
+
+/* Optional: maintain some spacing inside code blocks */
+pre.astro-code code {
+  display: block;
+  padding: 0.25em 0.5em; /* subtle padding like IDE */
+}
+
+/* ---------- BLOG POST LIST ---------- */
 ul.blog-posts {
   list-style-type: none;
   padding: unset;
@@ -247,17 +253,3 @@ ul.blog-posts li span {
 ul.blog-posts li a:visited {
   color: var(--visited-color);
 }
-
-/* shiki dark mode 
-html[data-theme="dark"] .astro-code,
-html[data-theme="dark"] .astro-code span {
-  color: var(--shiki-dark) !important;
-  background-color: var(--shiki-dark-bg) !important;
-}*/
-
-pre.astro-code {
-  border: 1px solid var(--code-border-color);
-  border-radius: 6px;
-  padding: 12px;
-}
-
