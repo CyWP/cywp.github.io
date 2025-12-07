@@ -15,7 +15,7 @@ const pixelationShader = {
   uniforms: {
     tDiffuse: { value: null },
     resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
-    pixelSize: { value: 8 }
+    pixelSize: { value: 32 }
   },
   vertexShader: `
     varying vec2 vUv;
@@ -40,8 +40,8 @@ const boxBlurShader = {
   uniforms: {
     tDiffuse: { value: null },
     resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
-    blurSize: { value: 16 }, // Size of the blur
-    aberrationStrength: { value: 8.0 } // Controls how strong the chromatic shift is
+    blurSize: { value: 16}, // Size of the blur
+    aberrationStrength: { value: 128.0} // Controls how strong the chromatic shift is
   },
   vertexShader: `
     varying vec2 vUv;
@@ -101,6 +101,38 @@ const boxBlurShader = {
     }
   `
 };
+
+const minClampShader = {
+  uniforms: { 
+    tDiffuse: { value: null },
+    minv: { value: 32.0 / 255.0 }  // minimum brightness
+  },
+  vertexShader: `
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `,
+  fragmentShader: `
+    uniform sampler2D tDiffuse;
+    uniform float minv;
+    varying vec2 vUv;
+
+    void main() {
+      vec4 c = texture2D(tDiffuse, vUv);
+
+      // Only apply clamp to *visible* fragments
+      if (c.a > 0.01) {
+        c.rgb = max(c.rgb, vec3(minv));
+      }
+
+      gl_FragColor = c;
+    }
+  `
+};
+
+
 
 function initThreeJS() {
   const container = document.getElementById("threejs-container");
@@ -236,10 +268,10 @@ function initThreeJS() {
   const rotations = [];
   const translations = [];
   const loader = new GLTFLoader();
-  const maxrot = 0.002;
+  const maxrot = 0.003;
   const maxdisp = 1.0;
-  const mvmt_decay = 0.995;
-  const maxtrans = 0.001;
+  const mvmt_decay = 1.0;
+  const maxtrans = 0.002;
   loadModels();
 
   for (let i = 0; i < baseMeshes.length; i++) {
@@ -264,6 +296,10 @@ function initThreeJS() {
   const pixelShaderPass = new ShaderPass(pixelationShader);
   composer.addPass(pixelShaderPass);
   pixelShaderPass.renderToScreen = true;
+
+  const minShaderPass = new ShaderPass(minClampShader);
+  composer.addPass(minShaderPass);
+  minShaderPass.renderToScreen = true;
   
   // Values for transforming baseMeshes
   console.log(rotations);
@@ -271,35 +307,43 @@ function initThreeJS() {
   let running = true;   // pause / resume rendering
   let hasFocus = true;  // also track window focus
 
-  function animate() {
-    requestAnimationFrame(animate);
+let lastFrameTime = 0;
+const targetFPS = 16;
+const frameInterval = 1000 / targetFPS;
 
-    if (!running || !hasFocus) return;
+function animate(timestamp) {
+  requestAnimationFrame(animate);
 
-    // Apply rotation to each mesh
-    for (let i = 0; i < baseMeshes.length; i++) {
-      const mesh = baseMeshes[i];
-      const rot = rotations[i];
-      const tra = translations[i];
+  if (!running || !hasFocus) return;
 
-      if (rot) {
-        mesh.rotation.x += rot.x;
-        mesh.rotation.y += rot.y;
-        mesh.rotation.z += rot.z;
-      }
+  // Run only if enough time has passed
+  if (timestamp - lastFrameTime < frameInterval) return;
+  lastFrameTime = timestamp;
 
-      if (tra) {
-        mesh.position.x += tra.x;
-        tra.x *= mvmt_decay;
-        mesh.position.y += tra.y;
-        tra.y *= mvmt_decay;
-        mesh.position.z += tra.z;
-        tra.z *= mvmt_decay;
-      }
+  // Apply rotation to each mesh
+  for (let i = 0; i < baseMeshes.length; i++) {
+    const mesh = baseMeshes[i];
+    const rot = rotations[i];
+    const tra = translations[i];
+
+    if (rot) {
+      mesh.rotation.x += rot.x;
+      mesh.rotation.y += rot.y;
+      mesh.rotation.z += rot.z;
     }
-
-    composer.render();
+    if (tra) {
+      mesh.position.x += tra.x;
+      tra.x *= mvmt_decay;
+      mesh.position.y += tra.y;
+      tra.y *= mvmt_decay;
+      mesh.position.z += tra.z;
+      tra.z *= mvmt_decay;
+    }
   }
+
+  composer.render();
+}
+
 
   animate();
 
