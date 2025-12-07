@@ -5,7 +5,10 @@ import { RenderPass } from 'https://cdn.jsdelivr.net/npm/three@0.121.1/examples/
 import { ShaderPass } from 'https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/postprocessing/ShaderPass.js';
 
 // Pixelation shader
-const defaultTexture = new THREE.TextureLoader().load('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8Xw8AAgMBAAIA4vQdAAAAAElFTkSuQmCC');
+const defaultTexture = new THREE.TextureLoader().load(
+  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAwMBASPT6t0AAAAASUVORK5CYII='
+);
+
 window.themeColors = {
   light: new THREE.Color("#ffffff"), // bright/white theme
   dark: new THREE.Color("#222222")   // dark theme
@@ -40,8 +43,8 @@ const boxBlurShader = {
   uniforms: {
     tDiffuse: { value: null },
     resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
-    blurSize: { value: 16}, // Size of the blur
-    aberrationStrength: { value: 128.0} // Controls how strong the chromatic shift is
+    blurSize: { value: 32}, // Size of the blur
+    aberrationStrength: { value: 32} // Controls how strong the chromatic shift is
   },
   vertexShader: `
     varying vec2 vUv;
@@ -171,7 +174,7 @@ function initThreeJS() {
             mesh.traverse((child) => {
               if (child.isMesh) {
                 const oldMat = child.material;
-                const texture = oldMat.map || null; // use original texture if it exists
+                const texture = oldMat.map || defaultTexture; // use original texture if it exists
                 child.material = new THREE.ShaderMaterial({
                   uniforms: {
                     uTexture: { value: texture },
@@ -248,6 +251,9 @@ function initThreeJS() {
 
   // Load baseMeshes
   const modelPaths = [
+    "/models/1.glb",
+    "/models/2.glb",
+    "/models/3.glb",
     "/models/incakola.glb",
     "/models/muscle.glb",
     "/models/taxi.glb",
@@ -268,10 +274,10 @@ function initThreeJS() {
   const rotations = [];
   const translations = [];
   const loader = new GLTFLoader();
-  const maxrot = 0.003;
+  const maxrot = 0.002;
   const maxdisp = 1.0;
   const mvmt_decay = 1.0;
-  const maxtrans = 0.002;
+  const maxtrans = 0.001;
   loadModels();
 
   for (let i = 0; i < baseMeshes.length; i++) {

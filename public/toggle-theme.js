@@ -1,11 +1,11 @@
-const primaryColorScheme = ""; // "light" | "dark"
+const primaryColorScheme = "light"; // "light" | "dark"
 window.shaderMaterials = [];
 // Get theme data from local storage
-const currentTheme = localStorage.getItem("theme");
+window.currentTheme = localStorage.getItem("theme");
 
 function getPreferTheme() {
   // return theme value in local storage if it is set
-  if (currentTheme) return currentTheme;
+  if (window.currentTheme) return window.currentTheme;
 
   // return primary color scheme if it is set
   if (primaryColorScheme) return primaryColorScheme;
@@ -26,7 +26,7 @@ function setPreference() {
 function updateShadersTheme() {
   const color = themeValue === "dark" ? 0x111111 : 0xffffff;
   window.shaderMaterials.forEach(mat => {
-    mat.uniforms.uThemeColor.value.set(color); // <-- use .set(), do NOT overwrite .value
+    mat.uniforms.uThemeColor.value.set(color);
     mat.uniforms.uThemeColor.needsUpdate = true;
   });
 }
