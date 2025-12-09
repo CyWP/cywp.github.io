@@ -4,16 +4,59 @@ import BlogPost from "../layouts/BlogPost.astro";
 
 <BlogPost
   id="about"
-  title="Thomas Wolfgang Peschlow"
+  title="Thomas Peschlow"
   description=""
   pubDate={}
   preview_image=""
   tags={[]}
 >
+  <!-- <div style="margin-top:4rem"></div> -->
+  <img src="/img/face512.gif" style="display:block; margin:0 auto;">
+  <div class="linklist">
+    <a href="/?tag=research">RESEARCH</a>
+    <a href="/?tag=featured">PROJECTS</a>
+    <a href="mailto:thomas.p24@live.com">EMAIL</a>
+    <a href="https://github.com/CyWP">GITHUB</a>
+    <a href="/docs/tpeschlow_cv_en.pdf">CV</a>
+  </div>
+  <div style="margin-top:4rem"></div>
   <p>
-    PlainPage is a fast, text-focused, minimalist blog theme for Astro. It is
-    designed to be simple and easy to use, with a focus on readability and
-    performance. The theme is fully responsive and works well on all devices,
-    from desktops to smartphones.
+    I am a second year MSc student at <a href="https://www.umontreal.ca/en/">Université de Montréal</a> and <a href="https://mila.quebec/en/">Mila</a>,
+    advised by <a href="https://noamaig.github.io/">Prof. Noam Aigerman</a>, and focusing on machine learning and geometry processing.
+  </p>
+<div style="margin-top:2rem"></div>
+  <p>
+    Previously, I've studied fashion design in CEGEP and gotten my Bachelor of Fine Arts from <a href="https://www.concordia.ca/finearts/design.html">Concordia University's Design Arts program</a> 
+    with a minor in Computer Science. There, I had the chance to work under <a href="https://vigliensoni.com/categories/featured/">Prof. Gabriel Vigliensoni</a>,
+    conducting research on explainability within the context of interactive machine learning and neural audio synthesis.
+  </p>
+<div style="margin-top:2rem"></div>
+  <p>
+    I hold a special interest in neural methods for assisting creative tasks, especially when explicitly packaged as artistic tools. When time permits, 
+    I enjoy practicing in sculpture and fashion design, and developing 3d modeling plug-ins for <a href="https://www.blender.org/">Blender</a>, such as 
+    <a href="/blog/dreamforge">DreamForge</a> and <a href="/blog/soaptools">SoapTools</a>.
   </p>
 </BlogPost>
+
+<style>
+  .linklist {
+    display: flex;
+    flex-wrap: wrap;       /* allow items to go to next line */
+    justify-content: space-between; /* distribute evenly */
+    gap: 1rem;             /* minimum spacing between items */
+    width: 100%;
+    box-sizing: border-box; /* include padding in width */
+  }
+
+  @media (max-width: 600px) {
+    .linklist {
+      justify-content: center; /* center items on small screens */
+      gap: 0.5rem;            /* reduce gap to save space */
+    }
+
+    .linklist a {
+      flex: 1 1 auto; /* allow items to shrink/grow */
+      text-align: center;
+    }
+  }
+</style>

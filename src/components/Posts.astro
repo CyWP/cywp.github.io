@@ -125,7 +125,7 @@ document.addEventListener('astro:after-swap', attachHoverPreview);
 
 <style>
   #hover-preview-container {
-    max-width: 20vw;
+    max-width: 30vw;
     position: fixed;
     pointer-events: none;
     opacity: 0;
@@ -141,7 +141,7 @@ document.addEventListener('astro:after-swap', attachHoverPreview);
     z-index: 9998;
   }
   .preview-text {
-    font-size: 1rem;
+    font-size: 1.2rem;
     max-width: 100%;
     margin: 5px;
     z-index: 9999;
@@ -156,41 +156,42 @@ document.addEventListener('astro:after-swap', attachHoverPreview);
     const posts = document.querySelectorAll(".post");
 
     posts.forEach(post => {
-      const postTags = post.dataset.tags.split(" "); // Get tags from data-tags
-      if (!tag || postTags.includes(tag)) {
-        post.style.display = "block"; // Show the post
-      } else {
-        post.style.display = "none";  // Hide the post
-      }
+      const postTags = post.dataset.tags.split(" ");
+      post.style.display = (!tag || postTags.includes(tag)) ? "block" : "none";
     });
   }
 
-  // Function to attach filter button click listeners
+  // Reads URL param and applies filter
+  function applyURLFilter() {
+    const params = new URLSearchParams(window.location.search);
+    const tag = params.get("tag");
+    filterContent(tag); // always run, even if empty
+  }
+
+  // Filter button click → update URL
   function attachFilterButtons() {
-    const filterButtons = document.querySelectorAll('.filter-btn');
-
-    filterButtons.forEach(button => {
-      // Remove old listener to avoid duplicates
+    document.querySelectorAll('.filter-btn').forEach(button => {
       button.onclick = null;
-
       button.addEventListener('click', function() {
         const tag = this.getAttribute('data-tag');
-        filterContent(tag); // Call the filterContent function
+        const params = new URLSearchParams(window.location.search);
+
+        if (tag) params.set("tag", tag);
+        else params.delete("tag");
+
+        history.pushState({}, "", `?${params.toString()}`);
+        filterContent(tag);
       });
     });
   }
 
-  // Function to attach theme toggle
+  // Theme toggle (unchanged)
   function attachThemeToggle() {
     const themeBtn = document.getElementById('theme-btn');
     const themeText = document.getElementById('theme-text');
-
     if (!themeBtn || !themeText) return;
 
-    // Set initial theme text
     themeText.textContent = document.body.classList.contains('dark-mode') ? 'DARK' : 'LIGHT';
-
-    // Remove old listener to avoid duplicates
     themeBtn.onclick = null;
 
     themeBtn.addEventListener('click', () => {
@@ -199,14 +200,15 @@ document.addEventListener('astro:after-swap', attachHoverPreview);
     });
   }
 
-  // Initial attachment
+  /* ------------------ INIT ------------------ */
   attachFilterButtons();
   attachThemeToggle();
+  applyURLFilter();                // ⭐ <-- this was missing
 
-  // Reattach after Astro swaps content
   document.addEventListener('astro:after-swap', () => {
     attachFilterButtons();
     attachThemeToggle();
+    applyURLFilter();              // ⭐ <-- now URL param works after nav too
   });
 </script>
 
@@ -251,6 +253,7 @@ document.addEventListener('astro:after-swap', attachHoverPreview);
     padding: 10px 0;
     display:flex;
     justify-content: center;
+    font-size: 1.2rem;
 }
 
   .scrollposts{
@@ -258,7 +261,20 @@ document.addEventListener('astro:after-swap', attachHoverPreview);
     width: 100%;
     padding-top: 180px;
     overflow-y: scroll; /* Allow vertical scrolling */
+    font-size: 1.2rem;
   }
+
+@media (max-width: 60em) {
+  .topbar {
+    font-size: 1rem;
+  }
+  .scrollposts {
+    font-size: 1rem;
+  }
+  .preview-text {
+    font-size: 1rem;
+  }
+}
 
   .blog-posts {
   }
@@ -266,8 +282,8 @@ document.addEventListener('astro:after-swap', attachHoverPreview);
   .blog-posts > *{
       padding-left: 20px;
       padding-right: 20px;
-      padding-top: 10px;
-      padding-bottom: 15px;
+      padding-top: 20px;
+      padding-bottom: 25px;
   }
 
   .post:hover {

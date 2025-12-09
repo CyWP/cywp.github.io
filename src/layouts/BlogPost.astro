@@ -29,11 +29,11 @@ const structuredData = {
     <header>
       <div class="topbar">
         <a href="/">HOME</a>
-        <p id="theme-btn" aria-label="auto" aria-live="polite" role="button">
+        <div id="theme-btn" aria-label="auto" aria-live="polite" role="button">
           <a id="theme-text" class="theme-text">
               LIGHT
           </a>
-        </p>
+        </div>
       </li>
       </div>
     </header>
@@ -69,8 +69,15 @@ const structuredData = {
     gap: 10px;
     width: 100%;
     max-width: 720px;
+    font-size: 1.2rem;
+    padding: 10px 0;
   }
 
+@media (max-width: 60em) {
+  .topbar {
+    font-size: 0.9rem;
+  }
+}
   h1 {
     text-align: center;
     margin: 10px 0;
@@ -79,7 +86,7 @@ const structuredData = {
   }
 
   .content {
-    padding-top: 210px; /* Prevents content from being hidden behind fixed header */
+    padding-top: 160px; /* Prevents content from being hidden behind fixed header */
     font-size: 1.2em;
   }
 

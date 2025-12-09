@@ -5,7 +5,7 @@ export const SITE_TITLE = "Thomas Peschlow";
 export const SITE_DESCRIPTION = "Personal website";
 
 export const SOCIAL_LINKS = {
-  Github: "https://github.com/CyWP",
+  // Github: "https://github.com/CyWP",
 };
 
 export const SEO_CONFIG = {

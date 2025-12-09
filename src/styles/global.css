@@ -83,6 +83,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  text-align: justify;
 }
 
 body {
@@ -91,7 +92,7 @@ body {
   margin: auto;
   padding: 20px;
   max-width: var(--width);
-  text-align: left;
+  /* text-align: left; */
   word-wrap: break-word;
   overflow-wrap: break-word;
   line-height: 1.5;
@@ -104,6 +105,24 @@ body {
   align-items: top;
   height: 100vh;
   position: relative;
+}
+
+p {
+  font-size: 1.2rem;
+}
+
+@media (max-width: 60em) {
+  .p {
+    font-size: 0.9rem;
+  }
+}
+
+
+iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  border: none;
 }
 
 #hover-preview-container {
@@ -124,6 +143,7 @@ a {
 a:hover {
   text-decoration: underline;
   text-decoration-style: dashed;
+  font-weight: bold;
 }
 
 .prose a {
