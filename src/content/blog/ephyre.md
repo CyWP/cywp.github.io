@@ -6,6 +6,7 @@ updatedDate: "May 30 2025"
 hide: false
 tags:
   - art
+  - featured
 preview_image: "/img/ephyre/e0_close_preview.png"
 ---
 <div style="margin-top:4rem"></div>

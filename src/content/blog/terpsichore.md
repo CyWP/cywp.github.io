@@ -10,15 +10,4 @@ tags:
 preview_image: "/img/terpsichore/banner.png"
 ---
 
-# Heading 1
-
-## Heading 2
-
-### Heading 3
-
-This is a paragraph.
-
-```python
-print("Hello world")
-```
-
+Woah! You got here early. If you are reading this, I am finishing to write this at the moment and will be ready tonight. 

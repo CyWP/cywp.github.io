@@ -27,7 +27,6 @@ When staring at death, how does one record it?
 
 <div style="margin-top:4rem"></div>
 
-![](https://youtu.be/KPaO4xBU-iM)
 <iframe
   src="https://www.youtube.com/embed/KPaO4xBU-iM"
   title="YouTube video player"
