@@ -93,4 +93,3 @@ A demo was created by training a model on the most recurring movements of [Milen
   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
   allowfullscreen
 ></iframe>
-

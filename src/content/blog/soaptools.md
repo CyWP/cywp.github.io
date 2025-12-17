@@ -99,3 +99,6 @@ Results from the flation operator can be considered to be a swatch of shapes fro
 ![](/img/soap/render2.png)
 ![](/img/soap/render0.png)
 ![](/img/soap/render1.png)
+![](/img/soap/render3.png)
+![](/img/soap/render4.png)
+![](/img/soap/render5.png)
