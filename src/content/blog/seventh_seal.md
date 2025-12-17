@@ -11,6 +11,7 @@ preview_image: "/img/seventh_seal/preview.png"
 <div style="margin-top:4rem"></div>
 
 When staring at death, how does one record it?
+
 <div style="margin-top:4rem"></div>
 
 *The Seventh Seal*  
@@ -41,4 +42,5 @@ When staring at death, how does one record it?
 
 ![](/img/seventh_seal/prie_dieu_1_top.webp)
 ![](/img/seventh_seal/prie_dieu_1_close.webp)
+
 *Prie-dieu, post performance.* 
