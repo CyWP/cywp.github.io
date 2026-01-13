@@ -34,6 +34,8 @@ Height, repetition and ornamentation serve as recall to the architectural order 
 
 ![](/img/ephyre/e1_close.jpg)
 
+![](/img/ephyre/e1_xfar.jpg)
+
 *Thomas Peschlow*  
 *Éphyre_0*  
 *Wood, gauze, wax, chrome, polylactic acid, acrylic*  

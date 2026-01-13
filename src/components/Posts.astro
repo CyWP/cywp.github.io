@@ -68,6 +68,7 @@ const tags = getUniqueTags(posts);
                 href={generateURL(`/blog/${post.id}/`)}
                 data-img={post.data.preview_image}
                 data-desc={post.data.description}
+                data-astro-reload
               >
                 {post.data.title.toUpperCase()}
               </a>

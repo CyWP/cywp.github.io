@@ -96,7 +96,6 @@ const structuredData = {
     margin: 0 auto; /* Centers it horizontally */
     padding-bottom: 80px;
   }
-  
 </style>
 
 <script>
@@ -110,7 +109,22 @@ const structuredData = {
   });
 
   document.addEventListener("astro:after-swap", () => {
+    // Re-attach mediumZoom
     zoom.attach(".prose img");
+
+    // Fix for video elements not loading after navigation
+    document.querySelectorAll('video').forEach(video => {
+      const parent = video.parentNode;
+      const next = video.nextSibling;
+      // Clone the video node deeply (with children)
+      const clone = video.cloneNode(true);
+      parent.removeChild(video);
+      if (next) {
+        parent.insertBefore(clone, next);
+      } else {
+        parent.appendChild(clone);
+      }
+    });
   });
 
   // Ensure script runs after DOM is loaded
